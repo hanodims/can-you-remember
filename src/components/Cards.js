@@ -10,7 +10,11 @@ import cardBack from "../images/CardBack.jpg";
 const Cards = ({ card, checkFlipped }) => {
   const [flipped, changeFlip] = useState(false);
   const handleFlip = () => {
-    changeFlip(!flipped);
+    if (flipped !== true) {
+      changeFlip(true);
+
+      checkFlipped({ id: card.id, changeFlip: changeFlip });
+    }
   };
 
     return (
