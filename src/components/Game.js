@@ -12,8 +12,11 @@ import { shuffle } from "../utils";
 
 // Components
 import Cards from "./Cards";
+import Score from "./Score";
 
-const Game = ({ difficulty }) => {
+
+
+const Game = ({ mode, difficulty }) => {
   const [cards, setCards] = useState([]);
   //const [flippedCards, changeFlipped] = useState([]);
 
@@ -35,10 +38,21 @@ const Game = ({ difficulty }) => {
     if (flippedCards.length === 2) {
       if (flippedCards[0].id !== flippedCards[1].id) {
         unflipCards(flippedCards[0].changeFlip, flippedCards[1].changeFlip);
+        increaseFailed(failedFlips + 1); //To know which player's turn it is
+        setPlayerTurn(!playerTurn); //To know which player's turn it is
+      } 
+      else {
+        if (mode === "multi") {//To Store player score
+          if (playerTurn) {
+            setScore([(score[0] += 1), score[1]]); 
+          } else {
+            setScore([score[0], (score[1] += 1)]);
+          }
+        }
       }
       changeFlipped([]);
     }
-  }; //3
+  }; 
 
   //Used to duplicate the amount of cards since we need two of each and shuffle them using the function defined at the top
   useEffect(() => {
@@ -60,13 +74,26 @@ const Game = ({ difficulty }) => {
   const cardsGrid = cards.map((card, idx) => (
     <Cards key={`${card.id}-${idx}`} card={card} checkFlipped={checkFlipped}/>
   ));
+//----------------------------------------------
+  //To Store player score and pass them
+  const [score, setScore] = useState([0, 0]); 
 
+  //To know which player's turn it is
+  const [playerTurn, setPlayerTurn] = useState(true); 
+  const [failedFlips, increaseFailed] = useState(0);
+//----------------------------------------------
   return (
     <Container>
       <Row>
         <Col className=" col-9">
-          <div className="row border">{cardsGrid}</div>
-        </Col>
+          <div className="row border mb-3">{cardsGrid}</div>
+          </Col>
+          <Score //7
+          mode={mode}
+          score={score}
+          failedFlips={failedFlips}
+          playerTurn={playerTurn}
+        />
       </Row>
     </Container>
   );
